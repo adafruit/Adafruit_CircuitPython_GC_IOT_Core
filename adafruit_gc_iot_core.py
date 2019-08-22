@@ -44,6 +44,7 @@ import rtc
 
 import adafruit_logging as logging
 from adafruit_jwt import JWT
+import adafruit_ntp as NTP
 
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_Cloud_IOT_Core.git"
@@ -270,19 +271,14 @@ class MQTT_API:
 class Cloud_Core:
     """CircuitPython Google Cloud IoT Core module.
 
-    :param network_manager: Network Manager module, such as WiFiManager.
+    :param ESP_SPIcontrol esp: ESP32SPI object.
     :param dict secrets: Secrets.py file.
     :param bool log: Enable Cloud_Core logging, defaults to False.
 
     """
 
-    def __init__(self, network_manager, secrets, log=False):
-        # Validate NetworkManager
-        network_manager_type = str(type(network_manager))
-        if "ESPSPI_WiFiManager" in network_manager_type:
-            self._wifi = network_manager
-        else:
-            raise TypeError("This library requires a NetworkManager object.")
+    def __init__(self, esp, secrets, log=False):
+        self._esp = esp
         # Validate Secrets
         if hasattr(secrets, "keys"):
             self._secrets = secrets
@@ -329,7 +325,9 @@ class Cloud_Core:
         """
         if self._logger:
             self._logger.debug("Generating JWT...")
-        self._get_local_time()
+        ntp = NTP.NTP(self._esp)
+        ntp.set_time()
+        #self._get_local_time()
         claims = {
             # The time that the token was issued at
             "iat": time.time(),
@@ -340,51 +338,3 @@ class Cloud_Core:
         }
         jwt = JWT.generate(claims, self._private_key, algo)
         return jwt
-
-    # pylint: disable=line-too-long, too-many-locals
-    def _get_local_time(self):
-        """Fetch and "set" the local time of this microcontroller to the
-        local time at the location, using an internet time API.
-        from Adafruit IO Arduino
-        """
-        api_url = None
-        try:
-            aio_username = self._secrets["aio_username"]
-            aio_key = self._secrets["aio_key"]
-        except KeyError:
-            raise KeyError(
-                "\n\nOur time service requires a login/password to rate-limit. Please register for a free adafruit.io account and place the user/key in your secrets file under 'aio_username' and 'aio_key'"
-            )
-        location = None
-        location = self._secrets.get("timezone", location)
-        if location:
-            if self._logger:
-                self._logger.debug("Getting time for timezone.")
-            api_url = (TIME_SERVICE + "&tz=%s") % (aio_username, aio_key, location)
-        else:  # we'll try to figure it out from the IP address
-            self._logger.debug("Getting time from IP Address..")
-            api_url = TIME_SERVICE % (aio_username, aio_key)
-        api_url += TIME_SERVICE_STRFTIME
-        try:
-            response = self._wifi.get(api_url)
-            times = response.text.split(" ")
-            the_date = times[0]
-            the_time = times[1]
-            year_day = int(times[2])
-            week_day = int(times[3])
-            is_dst = None  # no way to know yet
-        except KeyError:
-            raise KeyError(
-                "Was unable to lookup the time, try setting secrets['timezone'] according to http://worldtimeapi.org/timezones"
-            )  # pylint: disable=line-too-long
-        year, month, mday = [int(x) for x in the_date.split("-")]
-        the_time = the_time.split(".")[0]
-        hours, minutes, seconds = [int(x) for x in the_time.split(":")]
-        now = time.struct_time(
-            (year, month, mday, hours, minutes, seconds, week_day, year_day, is_dst)
-        )
-        rtc.RTC().datetime = now
-        # now clean up
-        response.close()
-        response = None
-        gc.collect()
