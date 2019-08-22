@@ -36,11 +36,7 @@ Implementation Notes
   https://github.com/adafruit/Adafruit_CircuitPython_Logging
 
 """
-
-# Core CircuitPython modules
-import gc
 import time
-import rtc
 
 import adafruit_logging as logging
 from adafruit_jwt import JWT
