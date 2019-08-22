@@ -7,7 +7,7 @@ from adafruit_esp32spi import adafruit_esp32spi_wifimanager
 import adafruit_esp32spi.adafruit_esp32spi_socket as socket
 
 from adafruit_minimqtt import MQTT
-from adafruit_iotcore import Cloud_Core, MQTT_API
+from adafruit_gc_iot_core import Cloud_Core, MQTT_API
 
 ### WiFi ###
 
