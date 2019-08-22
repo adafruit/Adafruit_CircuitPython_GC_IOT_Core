@@ -29,7 +29,7 @@ esp32_reset = DigitalInOut(board.ESP_RESET)
 # esp32_reset = DigitalInOut(board.D5)
 
 spi = busio.SPI(board.SCK, board.MOSI, board.MISO)
-esp = adafruit_esp32spi.ESP_SPIcontrol(spi, esp32_cs, esp32_ready, esp32_reset, debug=False)
+esp = adafruit_esp32spi.ESP_SPIcontrol(spi, esp32_cs, esp32_ready, esp32_reset)
 """Use below for Most Boards"""
 status_light = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2) # Uncomment for Most Boards
 """Uncomment below for ItsyBitsy M4"""
@@ -85,7 +85,7 @@ wifi.connect()
 print("Connected!")
 
 # Initialize Google Cloud IoT Core interface
-google_iot = Cloud_Core(wifi, secrets, log=False)
+google_iot = Cloud_Core(esp, secrets, log=False)
 
 # Optional JSON-Web-Token (JWT) Generation
 # print("Generating JWT...")
@@ -98,8 +98,7 @@ client =  MQTT(socket,
                username = google_iot.username,
                password = secrets['jwt'],
                client_id = google_iot.cid,
-               network_manager = wifi,
-               log=True)
+               network_manager = wifi)
 
 # Initialize Google MQTT API Client
 google_mqtt = MQTT_API(client)
