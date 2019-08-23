@@ -92,9 +92,11 @@ class MQTT_API:
         self._client.on_connect = self._on_connect_mqtt
         self._client.on_disconnect = self._on_disconnect_mqtt
         self._client.on_message = self._on_message_mqtt
+        self._client.on_subscribe = self._on_subscribe_mqtt
+        self._client.on_unsubscribe = self._on_unsubscribe_mqtt
         self._logger = False
         if self._client._logger is not None:
-            # Allow IOTCore to share MiniMQTT Client's logger
+            # Allow MQTT_API to utilize MiniMQTT Client's logger
             self._logger = True
             self._client.set_logger_level("DEBUG")
         self._connected = False
@@ -163,12 +165,30 @@ class MQTT_API:
 
     # pylint: disable=not-callable
     def _on_message_mqtt(self, client, topic, payload):
-        """Runs when the client calls on_message
+        """Runs when the client calls on_message.
         """
         if self._logger:
             self._client._logger.debug("Client called on_message")
         if self.on_message is not None:
             self.on_message(self, topic, payload)
+
+    # pylint: disable=not-callable
+    def _on_subscribe_mqtt(self, client, user_data, topic, qos):
+        """Runs when the client calls on_subscribe.
+        """
+        if self._logger:
+            self._client._logger.debug("Client called on_subscribe")
+        if self.on_subscribe is not None:
+            self.on_subscribe(self, user_data, topic, qos)
+
+    # pylint: disable=not-callable
+    def _on_unsubscribe_mqtt(self, client, user_data, topic, pid):
+        """Runs when the client calls on_unsubscribe.
+        """
+        if self._logger:
+            self._client._logger.debug("Client called on_unsubscribe")
+        if self.on_unsubscribe is not None:
+            self.on_unsubscribe(self, user_data, topic, pid)
 
     def loop(self):
         """Maintains a connection with Google Cloud IoT Core's MQTT broker. You will
@@ -190,6 +210,25 @@ class MQTT_API:
 
         """
         self._client.loop_forever()
+
+    def unsubscribe(self, topic, subfolder=None):
+        """Unsubscribes from a Google Cloud IoT device topic.
+        :param str topic: Required MQTT topic. Defaults to events.
+        :param str subfolder: Optional MQTT topic subfolder. Defaults to None.
+
+        """
+        if subfolder is not None:
+            mqtt_topic = "/devices/{}/{}/{}".format(self.device_id, topic, subfolder)
+        else:
+            mqtt_topic = "/devices/{}/{}".format(self.device_id, topic)
+        self._client.unsubscribe(mqtt_topic)
+
+    def unsubscribe_from_all_commands(self):
+        """Unsubscribes from a device's "commands/#" topic.
+        :param int qos: Quality of Service level for the message.
+
+        """
+        self.unsubscribe("commands/#")
 
     def subscribe(self, topic, subfolder=None, qos=1):
         """Subscribes to a Google Cloud IoT device topic.
