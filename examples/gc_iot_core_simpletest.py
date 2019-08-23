@@ -80,12 +80,12 @@ def message(client, topic, msg):
     print("Message from {}: {}".format(topic, msg))
 
 # Connect to WiFi
-print("connecting to WiFi...")
+print("Connecting to WiFi...")
 wifi.connect()
 print("Connected!")
 
 # Initialize Google Cloud IoT Core interface
-google_iot = Cloud_Core(esp, secrets, log=False)
+google_iot = Cloud_Core(esp, secrets)
 
 # Optional JSON-Web-Token (JWT) Generation
 # print("Generating JWT...")

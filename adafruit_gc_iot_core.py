@@ -45,16 +45,6 @@ import adafruit_ntp as NTP
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_Cloud_IOT_Core.git"
 
-TIME_SERVICE = (
-    "https://io.adafruit.com/api/v2/%s/integrations/time/strftime?x-aio-key=%s"
-)
-
-# our strftime is %Y-%m-%d %H:%M:%S.%L %j %u %z %Z see http://strftime.net/ for decoding details
-# See https://apidock.com/ruby/DateTime/strftime for full options
-TIME_SERVICE_STRFTIME = (
-    "&fmt=%25Y-%25m-%25d+%25H%3A%25M%3A%25S.%25L+%25j+%25u+%25z+%25Z"
-)
-
 class MQTT_API_ERROR(Exception):
     """Exception raised on MQTT API return-code errors."""
     # pylint: disable=unnecessary-pass
@@ -64,6 +54,7 @@ class MQTT_API:
     """Client for interacting with Google's Cloud Core MQTT API.
 
     :param MiniMQTT mqtt_client: MiniMQTT Client object.
+
     """
 
     # pylint: disable=protected-access
@@ -196,6 +187,7 @@ class MQTT_API:
     def loop_blocking(self):
         """Begins a blocking loop to process messages from
         IoT Core. Code below a call to this method will NOT run.
+
         """
         self._client.loop_forever()
 
@@ -204,6 +196,7 @@ class MQTT_API:
         :param str topic: Required MQTT topic. Defaults to events.
         :param str subfolder: Optional MQTT topic subfolder. Defaults to None.
         :param int qos: Quality of Service level for the message.
+
         """
         if subfolder is not None:
             mqtt_topic = "/devices/{}/{}/{}".format(self.device_id, topic, subfolder)
@@ -216,6 +209,7 @@ class MQTT_API:
         :param str topic: Required MQTT topic.
         :param str subfolder: Optional MQTT topic subfolder. Defaults to None.
         :param int qos: Quality of Service level for the message.
+
         """
         self.subscribe(topic, subfolder, qos)
 
@@ -223,12 +217,14 @@ class MQTT_API:
         """Subscribes to a Google Cloud IoT device's configuration
         topic.
         :param int qos: Quality of Service level for the message.
+
         """
         self.subscribe("config", qos=qos)
 
     def subscribe_to_all_commands(self, qos=1):
         """Subscribes to a device's "commands/#" topic.
         :param int qos: Quality of Service level for the message.
+
         """
         self.subscribe("commands/#", qos=qos)
 
@@ -243,6 +239,7 @@ class MQTT_API:
         :param str topic: Required MQTT topic. Defaults to events.
         :param str subfolder: Optional MQTT topic subfolder. Defaults to None.
         :param int qos: Quality of Service level for the message.
+
         """
         if subfolder is not None:
             mqtt_topic = "/devices/{}/{}/{}".format(self.device_id, topic, subfolder)
@@ -259,6 +256,7 @@ class MQTT_API:
         sent by this method should be information about the device itself (such as number of
         crashes, battery level, or device health). This method is unidirectional,
         it communicates Device-to-Cloud only.
+
         """
         self._client.publish(payload, "state")
 
@@ -318,12 +316,12 @@ class Cloud_Core:
 
             jwt = CloudCore.generate_jwt()
             print("Generated JWT: ", jwt)
+
         """
         if self._logger:
             self._logger.debug("Generating JWT...")
         ntp = NTP.NTP(self._esp)
         ntp.set_time()
-        #self._get_local_time()
         claims = {
             # The time that the token was issued at
             "iat": time.time(),
