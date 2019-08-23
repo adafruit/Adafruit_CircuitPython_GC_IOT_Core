@@ -57,7 +57,6 @@ class MQTT_API:
 
     """
 
-    # pylint: disable=protected-access
     def __init__(self, mqtt_client):
         # Check that provided object is a MiniMQTT client object
         mqtt_client_type = str(type(mqtt_client))
@@ -69,19 +68,19 @@ class MQTT_API:
             )
         # Verify that the MiniMQTT client was setup correctly.
         try:
-            self._user = self._client._user
+            self.user = self._client.user
         except:
             raise TypeError("Google Cloud Core IoT MQTT API requires a username.")
         # Validate provided JWT before connecting
         try:
-            JWT.validate(self._client._pass)
+            JWT.validate(self._client.password)
         except:
             raise TypeError("Invalid JWT provided.")
         # If client has KeepAlive =0 or if KeepAlive > 20min,
         # set KeepAlive to 19 minutes to avoid disconnection
         # due to Idle Time (https://cloud.google.com/iot/quotas).
-        if self._client._keep_alive == 0 or self._client._keep_alive >= 1200:
-            self._client._keep_alive = 1140
+        if self._client.keep_alive == 0 or self._client.keep_alive >= 1200:
+            self._client.keep_alive = 1140
         # User-defined MQTT callback methods must be init'd to None
         self.on_connect = None
         self.on_disconnect = None
@@ -94,14 +93,14 @@ class MQTT_API:
         self._client.on_message = self._on_message_mqtt
         self._client.on_subscribe = self._on_subscribe_mqtt
         self._client.on_unsubscribe = self._on_unsubscribe_mqtt
-        self._logger = False
-        if self._client._logger is not None:
+        self.logger = False
+        if self._client.logger is not None:
             # Allow MQTT_API to utilize MiniMQTT Client's logger
-            self._logger = True
+            self.logger = True
             self._client.set_logger_level("DEBUG")
         self._connected = False
         # Set up a device identifier by splitting out the full CID
-        self.device_id = self._client._client_id.split("/")[7]
+        self.device_id = self._client.client_id.split("/")[7]
 
     def __enter__(self):
         return self
@@ -142,8 +141,8 @@ class MQTT_API:
     def _on_connect_mqtt(self, client, userdata, flags, return_code):
         """Runs when the mqtt client calls on_connect.
         """
-        if self._logger:
-            self._client._logger.debug("Client called on_connect.")
+        if self.logger:
+            self._client.logger.debug("Client called on_connect.")
         if return_code == 0:
             self._connected = True
         else:
@@ -156,8 +155,8 @@ class MQTT_API:
     def _on_disconnect_mqtt(self, client, userdata, return_code):
         """Runs when the client calls on_disconnect.
         """
-        if self._logger:
-            self._client._logger.debug("Client called on_disconnect")
+        if self.logger:
+            self._client.logger.debug("Client called on_disconnect")
         self._connected = False
         # Call the user-defined on_disconnect callblack if defined
         if self.on_disconnect is not None:
@@ -167,8 +166,8 @@ class MQTT_API:
     def _on_message_mqtt(self, client, topic, payload):
         """Runs when the client calls on_message.
         """
-        if self._logger:
-            self._client._logger.debug("Client called on_message")
+        if self.logger:
+            self._client.logger.debug("Client called on_message")
         if self.on_message is not None:
             self.on_message(self, topic, payload)
 
@@ -176,8 +175,8 @@ class MQTT_API:
     def _on_subscribe_mqtt(self, client, user_data, topic, qos):
         """Runs when the client calls on_subscribe.
         """
-        if self._logger:
-            self._client._logger.debug("Client called on_subscribe")
+        if self.logger:
+            self._client.logger.debug("Client called on_subscribe")
         if self.on_subscribe is not None:
             self.on_subscribe(self, user_data, topic, qos)
 
@@ -185,8 +184,8 @@ class MQTT_API:
     def _on_unsubscribe_mqtt(self, client, user_data, topic, pid):
         """Runs when the client calls on_unsubscribe.
         """
-        if self._logger:
-            self._client._logger.debug("Client called on_unsubscribe")
+        if self.logger:
+            self._client.logger.debug("Client called on_unsubscribe")
         if self.on_unsubscribe is not None:
             self.on_unsubscribe(self, user_data, topic, pid)
 
@@ -319,10 +318,10 @@ class Cloud_Core:
             raise AttributeError(
                 "Project settings are kept in secrets.py, please add them there!"
             )
-        self._logger = None
+        self.logger = None
         if log is True:
-            self._logger = logging.getLogger("log")
-            self._logger.setLevel(logging.DEBUG)
+            self.logger = logging.getLogger("log")
+            self.logger.setLevel(logging.DEBUG)
         # Configuration, from secrets file
         self._proj_id = secrets["project_id"]
         self._region = secrets["cloud_region"]
@@ -340,8 +339,8 @@ class Cloud_Core:
         client_id = "projects/{0}/locations/{1}/registries/{2}/devices/{3}".format(
             self._proj_id, self._region, self._reg_id, self._device_id
         )
-        if self._logger:
-            self._logger.debug("Client ID: {}".format(client_id))
+        if self.logger:
+            self.logger.debug("Client ID: {}".format(client_id))
         return client_id
 
 
@@ -357,8 +356,8 @@ class Cloud_Core:
             print("Generated JWT: ", jwt)
 
         """
-        if self._logger:
-            self._logger.debug("Generating JWT...")
+        if self.logger:
+            self.logger.debug("Generating JWT...")
         ntp = NTP.NTP(self._esp)
         ntp.set_time()
         claims = {
