@@ -43,7 +43,7 @@ from adafruit_jwt import JWT
 import adafruit_ntp as NTP
 
 __version__ = "0.0.0-auto.0"
-__repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_Cloud_IOT_Core.git"
+__repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_GC_IOT_Core.git"
 
 class MQTT_API_ERROR(Exception):
     """Exception raised on MQTT API return-code errors."""
