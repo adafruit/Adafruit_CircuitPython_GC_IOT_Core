@@ -9,8 +9,8 @@ Introduction
     :target: https://discord.gg/nBQh6qu
     :alt: Discord
 
-.. image:: https://travis-ci.com/adafruit/Adafruit_CircuitPython_GC_IOT_CORE.svg?branch=master
-    :target: https://travis-ci.com/adafruit/Adafruit_CircuitPython_GC_IOT_CORE
+.. image:: https://github.com/adafruit/Adafruit_CircuitPython_GC_IOT_CORE/workflows/Build%20CI/badge.svg
+    :target: https://github.com/adafruit/Adafruit_CircuitPython_GC_IOT_CORE
     :alt: Build Status
 
 Google Cloud IoT Core Client for CircuitPython
