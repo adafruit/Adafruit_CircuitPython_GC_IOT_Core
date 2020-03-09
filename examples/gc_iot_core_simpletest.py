@@ -31,7 +31,9 @@ esp32_reset = DigitalInOut(board.ESP_RESET)
 spi = busio.SPI(board.SCK, board.MOSI, board.MISO)
 esp = adafruit_esp32spi.ESP_SPIcontrol(spi, esp32_cs, esp32_ready, esp32_reset)
 """Use below for Most Boards"""
-status_light = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2) # Uncomment for Most Boards
+status_light = neopixel.NeoPixel(
+    board.NEOPIXEL, 1, brightness=0.2
+)  # Uncomment for Most Boards
 """Uncomment below for ItsyBitsy M4"""
 # status_light = dotstar.DotStar(board.APA102_SCK, board.APA102_MOSI, 1, brightness=0.2)
 # Uncomment below for an externally defined RGB LED
@@ -50,34 +52,40 @@ wifi = adafruit_esp32spi_wifimanager.ESPSPI_WiFiManager(esp, secrets, status_lig
 def connect(client, userdata, flags, rc):
     # This function will be called when the client is connected
     # successfully to the broker.
-    print('Connected to MQTT Broker!')
-    print('Flags: {0}\n RC: {1}'.format(flags, rc))
+    print("Connected to MQTT Broker!")
+    print("Flags: {0}\n RC: {1}".format(flags, rc))
     # Subscribes to commands/# topic
     google_mqtt.subscribe_to_all_commands()
 
     # Publish to the default "events" topic
-    google_mqtt.publish('testing','events', qos=1)
+    google_mqtt.publish("testing", "events", qos=1)
+
 
 def disconnect(client, userdata, rc):
     # This method is called when the client disconnects
     # from the broker.
-    print('Disconnected from MQTT Broker!')
+    print("Disconnected from MQTT Broker!")
+
 
 def subscribe(client, userdata, topic, granted_qos):
     # This method is called when the client subscribes to a new topic.
-    print('Subscribed to {0} with QOS level {1}'.format(topic, granted_qos))
+    print("Subscribed to {0} with QOS level {1}".format(topic, granted_qos))
+
 
 def unsubscribe(client, userdata, topic, pid):
     # This method is called when the client unsubscribes from a topic.
-    print('Unsubscribed from {0} with PID {1}'.format(topic, pid))
+    print("Unsubscribed from {0} with PID {1}".format(topic, pid))
+
 
 def publish(client, userdata, topic, pid):
     # This method is called when the client publishes data to a topic.
-    print('Published to {0} with PID {1}'.format(topic, pid))
+    print("Published to {0} with PID {1}".format(topic, pid))
+
 
 def message(client, topic, msg):
     # This method is called when the client receives data from a topic.
     print("Message from {}: {}".format(topic, msg))
+
 
 # Connect to WiFi
 print("Connecting to WiFi...")
@@ -93,12 +101,14 @@ google_iot = Cloud_Core(esp, secrets)
 # print("Your JWT is: ", jwt)
 
 # Set up a new MiniMQTT Client
-client =  MQTT(socket,
-               broker = google_iot.broker,
-               username = google_iot.username,
-               password = secrets['jwt'],
-               client_id = google_iot.cid,
-               network_manager = wifi)
+client = MQTT(
+    socket,
+    broker=google_iot.broker,
+    username=google_iot.username,
+    password=secrets["jwt"],
+    client_id=google_iot.cid,
+    network_manager=wifi,
+)
 
 # Initialize Google MQTT API Client
 google_mqtt = MQTT_API(client)
@@ -111,7 +121,7 @@ google_mqtt.on_unsubscribe = unsubscribe
 google_mqtt.on_publish = publish
 google_mqtt.on_message = message
 
-print('Attempting to connect to %s'%client.broker)
+print("Attempting to connect to %s" % client.broker)
 google_mqtt.connect()
 
 # Pump the message loop forever, all events are

@@ -45,10 +45,13 @@ import adafruit_ntp as NTP
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_GC_IOT_Core.git"
 
+
 class MQTT_API_ERROR(Exception):
     """Exception raised on MQTT API return-code errors."""
+
     # pylint: disable=unnecessary-pass
     pass
+
 
 class MQTT_API:
     """Client for interacting with Google's Cloud Core MQTT API.
@@ -342,7 +345,6 @@ class Cloud_Core:
         if self.logger:
             self.logger.debug("Client ID: {}".format(client_id))
         return client_id
-
 
     def generate_jwt(self, ttl=43200, algo="RS256"):
         """Generates a JSON Web Token (https://jwt.io/) using network time.
