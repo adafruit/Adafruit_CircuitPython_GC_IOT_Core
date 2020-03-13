@@ -128,5 +128,15 @@ google_mqtt.connect()
 # while True:
 #    google_mqtt.loop()
 
-# Attempt to loop forever and handle network disconnection
-google_mqtt.loop_blocking()
+# Start a blocking message loop...
+# NOTE: NO code below this loop will execute
+# NOTE: Network reconnection is handled within this loop
+while True:
+    try:
+        google_mqtt.loop()
+    except (ValueError, RuntimeError) as e:
+        print("Failed to get data, retrying\n", e)
+        wifi.reset()
+        google_mqtt.reconnect()
+        continue
+    time.sleep(1)
