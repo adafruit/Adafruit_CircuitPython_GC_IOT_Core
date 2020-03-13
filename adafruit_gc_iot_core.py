@@ -128,6 +128,14 @@ class MQTT_API:
         # De-initialize MiniMQTT Client
         self._client.deinit()
 
+    def reconnect(self):
+        """Reconnects to the Google MQTT Broker.
+        """
+        try:
+            self._client.reconnect()
+        except:
+            raise MQTT_API_ERROR("Error reconnecting to Google MQTT.")
+
     def connect(self):
         """Connects to the Google MQTT Broker.
         """
