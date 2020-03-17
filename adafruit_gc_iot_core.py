@@ -128,6 +128,14 @@ class MQTT_API:
         # De-initialize MiniMQTT Client
         self._client.deinit()
 
+    def reconnect(self):
+        """Reconnects to the Google MQTT Broker.
+        """
+        try:
+            self._client.reconnect()
+        except:
+            raise MQTT_API_ERROR("Error reconnecting to Google MQTT.")
+
     def connect(self):
         """Connects to the Google MQTT Broker.
         """
@@ -331,7 +339,7 @@ class Cloud_Core:
         self._reg_id = secrets["registry_id"]
         self._device_id = secrets["device_id"]
         self._private_key = secrets["private_key"]
-        self.broker = "mqtt.googleapis.com"
+        self.broker = "https://mqtt.googleapis.com"
         self.username = b"unused"
         self.cid = self.client_id
 

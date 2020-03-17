@@ -1,3 +1,4 @@
+import time
 import board
 import busio
 from digitalio import DigitalInOut
@@ -6,7 +7,7 @@ from adafruit_esp32spi import adafruit_esp32spi
 from adafruit_esp32spi import adafruit_esp32spi_wifimanager
 import adafruit_esp32spi.adafruit_esp32spi_socket as socket
 
-from adafruit_minimqtt import MQTT
+import adafruit_minimqtt as MQTT
 from adafruit_gc_iot_core import Cloud_Core, MQTT_API
 
 ### WiFi ###
@@ -92,6 +93,9 @@ print("Connecting to WiFi...")
 wifi.connect()
 print("Connected!")
 
+# Initialize MQTT interface with the esp interface
+MQTT.set_socket(socket, esp)
+
 # Initialize Google Cloud IoT Core interface
 google_iot = Cloud_Core(esp, secrets)
 
@@ -101,14 +105,10 @@ google_iot = Cloud_Core(esp, secrets)
 # print("Your JWT is: ", jwt)
 
 # Set up a new MiniMQTT Client
-client = MQTT(
-    socket,
-    broker=google_iot.broker,
-    username=google_iot.username,
-    password=secrets["jwt"],
-    client_id=google_iot.cid,
-    network_manager=wifi,
-)
+client = MQTT.MQTT(broker=google_iot.broker,
+                   username=google_iot.username,
+                   password=secrets["jwt"],
+                   client_id=google_iot.cid)
 
 # Initialize Google MQTT API Client
 google_mqtt = MQTT_API(client)
@@ -129,5 +129,15 @@ google_mqtt.connect()
 # while True:
 #    google_mqtt.loop()
 
-# Attempt to loop forever and handle network disconnection
-google_mqtt.loop_blocking()
+# Start a blocking message loop...
+# NOTE: NO code below this loop will execute
+# NOTE: Network reconnection is handled within this loop
+while True:
+    try:
+        google_mqtt.loop()
+    except (ValueError, RuntimeError) as e:
+        print("Failed to get data, retrying\n", e)
+        wifi.reset()
+        google_mqtt.reconnect()
+        continue
+    time.sleep(1)
