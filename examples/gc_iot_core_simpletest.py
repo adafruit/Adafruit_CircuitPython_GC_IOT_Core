@@ -105,10 +105,12 @@ google_iot = Cloud_Core(esp, secrets)
 # print("Your JWT is: ", jwt)
 
 # Set up a new MiniMQTT Client
-client = MQTT.MQTT(broker=google_iot.broker,
-                   username=google_iot.username,
-                   password=secrets["jwt"],
-                   client_id=google_iot.cid)
+client = MQTT.MQTT(
+    broker=google_iot.broker,
+    username=google_iot.username,
+    password=secrets["jwt"],
+    client_id=google_iot.cid,
+)
 
 # Initialize Google MQTT API Client
 google_mqtt = MQTT_API(client)
