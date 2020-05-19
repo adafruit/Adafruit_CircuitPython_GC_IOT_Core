@@ -339,7 +339,7 @@ class Cloud_Core:
         self._reg_id = secrets["registry_id"]
         self._device_id = secrets["device_id"]
         self._private_key = secrets["private_key"]
-        self.broker = "https://mqtt.googleapis.com"
+        self.broker = "mqtt.googleapis.com"
         self.username = b"unused"
         self.cid = self.client_id
 
