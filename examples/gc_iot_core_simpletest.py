@@ -32,7 +32,9 @@ esp32_reset = DigitalInOut(board.ESP_RESET)
 spi = busio.SPI(board.SCK, board.MOSI, board.MISO)
 esp = adafruit_esp32spi.ESP_SPIcontrol(spi, esp32_cs, esp32_ready, esp32_reset)
 """Use below for Most Boards"""
-status_light = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.2)  # Uncomment for Most Boards
+status_light = neopixel.NeoPixel(
+    board.NEOPIXEL, 1, brightness=0.2
+)  # Uncomment for Most Boards
 """Uncomment below for ItsyBitsy M4"""
 # status_light = dotstar.DotStar(board.APA102_SCK, board.APA102_MOSI, 1, brightness=0.2)
 # Uncomment below for an externally defined RGB LED
@@ -103,7 +105,12 @@ google_iot = Cloud_Core(esp, secrets)
 # print("Your JWT is: ", jwt)
 
 # Set up a new MiniMQTT Client
-client = MQTT.MQTT(broker=google_iot.broker, username=google_iot.username, password=secrets["jwt"], client_id=google_iot.cid,)
+client = MQTT.MQTT(
+    broker=google_iot.broker,
+    username=google_iot.username,
+    password=secrets["jwt"],
+    client_id=google_iot.cid,
+)
 
 # Initialize Google MQTT API Client
 google_mqtt = MQTT_API(client)
