@@ -66,9 +66,7 @@ class MQTT_API:
         if "MQTT" in mqtt_client_type:
             self._client = mqtt_client
         else:
-            raise TypeError(
-                "This class requires a MiniMQTT client object, please create one."
-            )
+            raise TypeError("This class requires a MiniMQTT client object, please create one.")
         # Verify that the MiniMQTT client was setup correctly.
         try:
             self.user = self._client.user
@@ -326,9 +324,7 @@ class Cloud_Core:
         if hasattr(secrets, "keys"):
             self._secrets = secrets
         else:
-            raise AttributeError(
-                "Project settings are kept in secrets.py, please add them there!"
-            )
+            raise AttributeError("Project settings are kept in secrets.py, please add them there!")
         self.logger = None
         if log is True:
             self.logger = logging.getLogger("log")
@@ -339,7 +335,7 @@ class Cloud_Core:
         self._reg_id = secrets["registry_id"]
         self._device_id = secrets["device_id"]
         self._private_key = secrets["private_key"]
-        self.broker = "https://mqtt.googleapis.com"
+        self.broker = "mqtt.googleapis.com"
         self.username = b"unused"
         self.cid = self.client_id
 
