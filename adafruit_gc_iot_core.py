@@ -214,13 +214,6 @@ class MQTT_API:
         if self._connected:
             self._client.loop()
 
-    def loop_blocking(self):
-        """Begins a blocking loop to process messages from
-        IoT Core. Code below a call to this method will NOT run.
-
-        """
-        self._client.loop_forever()
-
     def unsubscribe(self, topic, subfolder=None):
         """Unsubscribes from a Google Cloud IoT device topic.
         :param str topic: Required MQTT topic. Defaults to events.
