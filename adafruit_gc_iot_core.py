@@ -1,18 +1,8 @@
-# Copyright 2019 Google Inc.
+# SPDX-FileCopyrightText: 2019 Google Inc.
+# SPDX-FileCopyrightText: 2019 Brent Rubell for Adafruit Industries
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#         http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-# Modified by Brent Rubell for Adafruit Industries, 2019
+# SPDX-License-Identifier: Apache-2.0
+
 """
 `adafruit_gc_iot_core`
 ================================================================================
@@ -72,13 +62,15 @@ class MQTT_API:
         # Verify that the MiniMQTT client was setup correctly.
         try:
             self.user = self._client.user
-        except:
-            raise TypeError("Google Cloud Core IoT MQTT API requires a username.")
+        except Exception as err:
+            raise TypeError(
+                "Google Cloud Core IoT MQTT API requires a username."
+            ) from err
         # Validate provided JWT before connecting
         try:
             JWT.validate(self._client.password)
-        except:
-            raise TypeError("Invalid JWT provided.")
+        except Exception as err:
+            raise TypeError("Invalid JWT provided.") from err
         # If client has KeepAlive =0 or if KeepAlive > 20min,
         # set KeepAlive to 19 minutes to avoid disconnection
         # due to Idle Time (https://cloud.google.com/iot/quotas).
@@ -112,12 +104,11 @@ class MQTT_API:
         self.disconnect()
 
     def disconnect(self):
-        """Disconnects from the Google MQTT Broker.
-        """
+        """Disconnects from the Google MQTT Broker."""
         try:
             self._client.disconnect()
-        except:
-            raise ValueError("Unable to disconnect from Google's MQTT broker.")
+        except Exception as err:
+            raise ValueError("Unable to disconnect from Google's MQTT broker.") from err
         self._connected = False
         # Reset all user-defined callbacks
         self.on_connect = None
@@ -129,29 +120,25 @@ class MQTT_API:
         self._client.deinit()
 
     def reconnect(self):
-        """Reconnects to the Google MQTT Broker.
-        """
+        """Reconnects to the Google MQTT Broker."""
         try:
             self._client.reconnect()
-        except:
-            raise MQTT_API_ERROR("Error reconnecting to Google MQTT.")
+        except Exception as err:
+            raise MQTT_API_ERROR("Error reconnecting to Google MQTT.") from err
 
     def connect(self):
-        """Connects to the Google MQTT Broker.
-        """
+        """Connects to the Google MQTT Broker."""
         self._client.connect()
         self._connected = True
 
     @property
     def is_connected(self):
-        """Returns if client is connected to Google's MQTT broker.
-        """
+        """Returns if client is connected to Google's MQTT broker."""
         return self._connected
 
     # pylint: disable=not-callable, unused-argument
     def _on_connect_mqtt(self, client, userdata, flags, return_code):
-        """Runs when the mqtt client calls on_connect.
-        """
+        """Runs when the mqtt client calls on_connect."""
         if self.logger:
             self._client.logger.debug("Client called on_connect.")
         if return_code == 0:
@@ -164,8 +151,7 @@ class MQTT_API:
 
     # pylint: disable=not-callable, unused-argument
     def _on_disconnect_mqtt(self, client, userdata, return_code):
-        """Runs when the client calls on_disconnect.
-        """
+        """Runs when the client calls on_disconnect."""
         if self.logger:
             self._client.logger.debug("Client called on_disconnect")
         self._connected = False
@@ -175,8 +161,7 @@ class MQTT_API:
 
     # pylint: disable=not-callable
     def _on_message_mqtt(self, client, topic, payload):
-        """Runs when the client calls on_message.
-        """
+        """Runs when the client calls on_message."""
         if self.logger:
             self._client.logger.debug("Client called on_message")
         if self.on_message is not None:
@@ -184,8 +169,7 @@ class MQTT_API:
 
     # pylint: disable=not-callable
     def _on_subscribe_mqtt(self, client, user_data, topic, qos):
-        """Runs when the client calls on_subscribe.
-        """
+        """Runs when the client calls on_subscribe."""
         if self.logger:
             self._client.logger.debug("Client called on_subscribe")
         if self.on_subscribe is not None:
@@ -193,8 +177,7 @@ class MQTT_API:
 
     # pylint: disable=not-callable
     def _on_unsubscribe_mqtt(self, client, user_data, topic, pid):
-        """Runs when the client calls on_unsubscribe.
-        """
+        """Runs when the client calls on_unsubscribe."""
         if self.logger:
             self._client.logger.debug("Client called on_unsubscribe")
         if self.on_unsubscribe is not None:
@@ -338,8 +321,7 @@ class Cloud_Core:
 
     @property
     def client_id(self):
-        """Returns a Google Cloud IOT Core Client ID.
-        """
+        """Returns a Google Cloud IOT Core Client ID."""
         client_id = "projects/{0}/locations/{1}/registries/{2}/devices/{3}".format(
             self._proj_id, self._region, self._reg_id, self._device_id
         )
