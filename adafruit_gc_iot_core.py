@@ -30,7 +30,6 @@ import time
 
 import adafruit_logging as logging
 from adafruit_jwt import JWT
-import adafruit_ntp as NTP
 
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_GC_IOT_Core.git"
@@ -296,10 +295,10 @@ class Cloud_Core:
 
     """
 
-    def __init__(self, esp, secrets, log=False):
+    def __init__(self, esp=None, secrets=None, log=False):
         self._esp = esp
         # Validate Secrets
-        if hasattr(secrets, "keys"):
+        if secrets and hasattr(secrets, "keys"):
             self._secrets = secrets
         else:
             raise AttributeError(
@@ -343,8 +342,16 @@ class Cloud_Core:
         """
         if self.logger:
             self.logger.debug("Generating JWT...")
-        ntp = NTP.NTP(self._esp)
-        ntp.set_time()
+
+        if self._esp is not None:
+            # Not all boards have ESP access easily (eg: featherS2). If we pass in a False or None in init, lets
+            #   assume that we've handled setting the RTC outside of here
+            import adafruit_ntp as NTP
+            ntp = NTP.NTP(self._esp)
+            ntp.set_time()
+        else:
+            self.logger.info(f"No self._esp instance found, assuming RTC has been previously set")
+
         claims = {
             # The time that the token was issued at
             "iat": time.time(),
