@@ -60,14 +60,15 @@ class MQTT_API:
             )
         # Verify that the MiniMQTT client was setup correctly.
         try:
-            self.user = self._client.user
+            # I have no idea where _client.user comes from, but ._username exists when .user doesn't
+            self.user = self._client._username
         except Exception as err:
             raise TypeError(
                 "Google Cloud Core IoT MQTT API requires a username."
             ) from err
         # Validate provided JWT before connecting
         try:
-            JWT.validate(self._client.password)
+            JWT.validate(self._client._password)  # Again, .password isn't valid here..
         except Exception as err:
             raise TypeError("Invalid JWT provided.") from err
         # If client has KeepAlive =0 or if KeepAlive > 20min,
@@ -350,7 +351,8 @@ class Cloud_Core:
             ntp = NTP.NTP(self._esp)
             ntp.set_time()
         else:
-            self.logger.info(f"No self._esp instance found, assuming RTC has been previously set")
+            if self.logger:
+                self.logger.info(f"No self._esp instance found, assuming RTC has been previously set")
 
         claims = {
             # The time that the token was issued at
@@ -358,7 +360,6 @@ class Cloud_Core:
             # The time the token expires.
             "exp": time.time() + ttl,
             # The audience field should always be set to the GCP project id.
-            "aud": self._proj_id,
         }
         jwt = JWT.generate(claims, self._private_key, algo)
         return jwt
