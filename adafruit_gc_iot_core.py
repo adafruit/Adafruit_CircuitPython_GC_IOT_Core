@@ -360,6 +360,7 @@ class Cloud_Core:
             # The time the token expires.
             "exp": time.time() + ttl,
             # The audience field should always be set to the GCP project id.
+            "aud": self._proj_id
         }
         jwt = JWT.generate(claims, self._private_key, algo)
         return jwt
