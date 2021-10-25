@@ -58,6 +58,11 @@ Usage Example
 
 Usage example within examples/ folder.
 
+Documentation
+=============
+
+API documentation for this library can be found on `Read the Docs <https://circuitpython.readthedocs.io/projects/gc_iot_core/en/latest/>`_.
+
 Contributing
 ============
 
