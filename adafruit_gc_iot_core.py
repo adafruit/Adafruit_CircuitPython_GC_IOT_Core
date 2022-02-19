@@ -30,7 +30,6 @@ import time
 
 import adafruit_logging as logging
 from adafruit_jwt import JWT
-import adafruit_ntp as NTP
 
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_GC_IOT_Core.git"
@@ -61,14 +60,15 @@ class MQTT_API:
             )
         # Verify that the MiniMQTT client was setup correctly.
         try:
-            self.user = self._client.user
+            # I have no idea where _client.user comes from, but ._username exists when .user doesn't
+            self.user = self._client._username
         except Exception as err:
             raise TypeError(
                 "Google Cloud Core IoT MQTT API requires a username."
             ) from err
         # Validate provided JWT before connecting
         try:
-            JWT.validate(self._client.password)
+            JWT.validate(self._client._password)  # Again, .password isn't valid here..
         except Exception as err:
             raise TypeError("Invalid JWT provided.") from err
         # If client has KeepAlive =0 or if KeepAlive > 20min,
@@ -296,10 +296,10 @@ class Cloud_Core:
 
     """
 
-    def __init__(self, esp, secrets, log=False):
+    def __init__(self, esp=None, secrets=None, log=False):
         self._esp = esp
         # Validate Secrets
-        if hasattr(secrets, "keys"):
+        if secrets and hasattr(secrets, "keys"):
             self._secrets = secrets
         else:
             raise AttributeError(
@@ -343,15 +343,24 @@ class Cloud_Core:
         """
         if self.logger:
             self.logger.debug("Generating JWT...")
-        ntp = NTP.NTP(self._esp)
-        ntp.set_time()
+
+        if self._esp is not None:
+            # Not all boards have ESP access easily (eg: featherS2). If we pass in a False or None in init, lets
+            #   assume that we've handled setting the RTC outside of here
+            import adafruit_ntp as NTP
+            ntp = NTP.NTP(self._esp)
+            ntp.set_time()
+        else:
+            if self.logger:
+                self.logger.info(f"No self._esp instance found, assuming RTC has been previously set")
+
         claims = {
             # The time that the token was issued at
             "iat": time.time(),
             # The time the token expires.
             "exp": time.time() + ttl,
             # The audience field should always be set to the GCP project id.
-            "aud": self._proj_id,
+            "aud": self._proj_id
         }
         jwt = JWT.generate(claims, self._private_key, algo)
         return jwt
