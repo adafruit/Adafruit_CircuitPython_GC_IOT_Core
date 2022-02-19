@@ -345,14 +345,19 @@ class Cloud_Core:
             self.logger.debug("Generating JWT...")
 
         if self._esp is not None:
-            # Not all boards have ESP access easily (eg: featherS2). If we pass in a False or None in init, lets
+            # Not all boards have ESP access easily (eg: featherS2).
+            #   If we pass in a False or None in init, lets
             #   assume that we've handled setting the RTC outside of here
+            # pylint: disable=import-outside-toplevel
             import adafruit_ntp as NTP
+
             ntp = NTP.NTP(self._esp)
             ntp.set_time()
         else:
             if self.logger:
-                self.logger.info(f"No self._esp instance found, assuming RTC has been previously set")
+                self.logger.info(
+                    "No self._esp instance found, assuming RTC has been previously set"
+                )
 
         claims = {
             # The time that the token was issued at
@@ -360,7 +365,7 @@ class Cloud_Core:
             # The time the token expires.
             "exp": time.time() + ttl,
             # The audience field should always be set to the GCP project id.
-            "aud": self._proj_id
+            "aud": self._proj_id,
         }
         jwt = JWT.generate(claims, self._private_key, algo)
         return jwt
