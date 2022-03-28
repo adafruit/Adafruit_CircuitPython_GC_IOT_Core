@@ -188,7 +188,8 @@ class MQTT_API:
         need to manually call this method within a loop to retain connection.
 
         Example of "pumping" a Google Core IoT loop.
-        ..code-block:: python
+
+        .. code-block:: python
 
             while True:
                 google_iot.loop()
@@ -199,6 +200,7 @@ class MQTT_API:
 
     def unsubscribe(self, topic, subfolder=None):
         """Unsubscribes from a Google Cloud IoT device topic.
+
         :param str topic: Required MQTT topic. Defaults to events.
         :param str subfolder: Optional MQTT topic subfolder. Defaults to None.
 
@@ -211,6 +213,7 @@ class MQTT_API:
 
     def unsubscribe_from_all_commands(self):
         """Unsubscribes from a device's "commands/#" topic.
+
         :param int qos: Quality of Service level for the message.
 
         """
@@ -218,6 +221,7 @@ class MQTT_API:
 
     def subscribe(self, topic, subfolder=None, qos=1):
         """Subscribes to a Google Cloud IoT device topic.
+
         :param str topic: Required MQTT topic. Defaults to events.
         :param str subfolder: Optional MQTT topic subfolder. Defaults to None.
         :param int qos: Quality of Service level for the message.
@@ -231,6 +235,7 @@ class MQTT_API:
 
     def subscribe_to_subfolder(self, topic, subfolder, qos=1):
         """Subscribes to a Google Cloud IoT device's topic subfolder
+
         :param str topic: Required MQTT topic.
         :param str subfolder: Optional MQTT topic subfolder. Defaults to None.
         :param int qos: Quality of Service level for the message.
@@ -241,6 +246,7 @@ class MQTT_API:
     def subscribe_to_config(self, qos=1):
         """Subscribes to a Google Cloud IoT device's configuration
         topic.
+
         :param int qos: Quality of Service level for the message.
 
         """
@@ -331,11 +337,13 @@ class Cloud_Core:
 
     def generate_jwt(self, ttl=43200, algo="RS256"):
         """Generates a JSON Web Token (https://jwt.io/) using network time.
+
         :param int jwt_ttl: When the JWT token expires, defaults to 43200 minutes (or 12 hours).
         :param str algo: Algorithm used to create a JSON Web Token.
 
         Example usage of generating and setting a JSON-Web-Token:
-        ..code-block:: python
+
+        .. code-block:: python
 
             jwt = CloudCore.generate_jwt()
             print("Generated JWT: ", jwt)
