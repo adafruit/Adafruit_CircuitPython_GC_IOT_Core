@@ -30,6 +30,7 @@ import time
 
 import adafruit_logging as logging
 from adafruit_jwt import JWT
+import rtc
 
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_GC_IOT_Core.git"
@@ -353,14 +354,7 @@ class Cloud_Core:
             self.logger.debug("Generating JWT...")
 
         if self._esp is not None:
-            # Not all boards have ESP access easily (eg: featherS2).
-            #   If we pass in a False or None in init, lets
-            #   assume that we've handled setting the RTC outside of here
-            # pylint: disable=import-outside-toplevel
-            import adafruit_ntp as NTP
-
-            ntp = NTP.NTP(self._esp)
-            ntp.set_time()
+            rtc.RTC().datetime = time.localtime(self._esp.get_time()[0])
         else:
             if self.logger:
                 self.logger.info(
