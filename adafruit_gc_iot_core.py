@@ -354,12 +354,19 @@ class Cloud_Core:
             self.logger.debug("Generating JWT...")
 
         if self._esp is not None:
-            rtc.RTC().datetime = time.localtime(self._esp.get_time()[0])
-        else:
-            if self.logger:
-                self.logger.info(
-                    "No self._esp instance found, assuming RTC has been previously set"
-                )
+            # get_time will raise ValueError if the time isn't available yet so loop until
+            # it works.
+            now_utc = None
+            while now_utc is None:
+                try:
+                    now_utc = time.localtime(self._esp.get_time()[0])
+                except ValueError:
+                    pass
+            rtc.RTC().datetime = now_utc
+        elif self.logger:
+            self.logger.info(
+                "No self._esp instance found, assuming RTC has been previously set"
+            )
 
         claims = {
             # The time that the token was issued at
