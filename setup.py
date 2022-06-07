@@ -33,7 +33,11 @@ setup(
     # Author details
     author="Adafruit Industries",
     author_email="circuitpython@adafruit.com",
-    install_requires=["Adafruit-Blinka", "adafruit_jwt", "adafruit_logging>=4.0.1"],
+    install_requires=[
+        "Adafruit-Blinka",
+        "adafruit-circuitpython-jwt",
+        "adafruit-circuitpython-logging>=4.0.1",
+    ],
     # Choose your license
     license="MIT",
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
