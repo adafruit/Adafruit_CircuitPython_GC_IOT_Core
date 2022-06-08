@@ -315,6 +315,7 @@ class Cloud_Core:
         self.logger = None
         if log is True:
             self.logger = logging.getLogger("log")
+            self.logger.addHandler(logging.StreamHandler())
             self.logger.setLevel(logging.DEBUG)
         # Configuration, from secrets file
         self._proj_id = secrets["project_id"]
