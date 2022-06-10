@@ -31,10 +31,9 @@ from __future__ import annotations
 
 
 import time
-from typing import Dict
 
 try:
-    from typing import Any, Optional, Union
+    from typing import Any, Dict, Optional, Union
     from types import TracebackType
 
     from adafruit_esp32spi import adafruit_esp32spi as ESP32SPI
@@ -272,7 +271,10 @@ class MQTT_API:
         self.unsubscribe("commands/#")
 
     def subscribe(
-        self, topic: str, subfolder: Optional[str] = None, qos: int = 1
+        self,
+        topic: str,
+        subfolder: Optional[str] = None,
+        qos: int = 1,
     ) -> None:
         """Subscribes to a Google Cloud IoT device topic.
 
