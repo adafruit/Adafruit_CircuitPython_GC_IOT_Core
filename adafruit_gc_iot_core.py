@@ -27,13 +27,10 @@ Implementation Notes
 
 """
 
-from __future__ import annotations
-
-
 import time
 
 try:
-    from typing import Any, Dict, Optional, Union
+    from typing import Any, Dict, Optional, Type, Union
     from types import TracebackType
 
     from adafruit_esp32spi import adafruit_esp32spi as ESP32SPI
@@ -59,11 +56,10 @@ class MQTT_API_ERROR(Exception):
 class MQTT_API:
     """Client for interacting with Google's Cloud Core MQTT API.
 
-    :param MiniMQTT mqtt_client: MiniMQTT Client object.
-
+    :param ~MQTT.MQTT mqtt_client: MiniMQTT Client object
     """
 
-    def __init__(self, mqtt_client: MQTT.MQTT):
+    def __init__(self, mqtt_client: MQTT.MQTT) -> None:
         # Check that provided object is a MiniMQTT client object
         mqtt_client_type = str(type(mqtt_client))
         if "MQTT" in mqtt_client_type:
@@ -111,14 +107,14 @@ class MQTT_API:
         # Set up a device identifier by splitting out the full CID
         self.device_id = self._client.client_id.split("/")[7]
 
-    def __enter__(self) -> MQTT_API:
+    def __enter__(self) -> "MQTT_API":
         return self
 
     def __exit__(
         self,
-        exception_type: Exception,
-        exception_value: Exception,
-        traceback: TracebackType,
+        exception_type: Optional[Type[type]],
+        exception_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
     ) -> None:
         self.disconnect()
 
