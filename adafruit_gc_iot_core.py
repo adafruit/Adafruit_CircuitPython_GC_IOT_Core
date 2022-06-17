@@ -30,7 +30,7 @@ Implementation Notes
 import time
 
 try:
-    from typing import Any, Dict, Optional, Type, Union
+    from typing import Any, Callable, Dict, Optional, Type, Union
     from types import TracebackType
 
     from adafruit_esp32spi import adafruit_esp32spi as ESP32SPI
@@ -58,6 +58,17 @@ class MQTT_API:
 
     :param ~MQTT.MQTT mqtt_client: MiniMQTT Client object
     """
+
+    device_id: str
+    logger: bool
+    on_connect: Optional[Callable[["MQTT_API", Optional[Any], bytearray, int], None]]
+    on_disconnect: Optional[Callable[["MQTT_API"], None]]
+    on_message: Optional[Callable[["MQTT_API", str, str], None]]
+    on_subscribe: Optional[Callable[["MQTT_API", Optional[Any], str, int], None]]
+    on_unsubscribe: Optional[Callable[["MQTT_API", Optional[Any], str, int], None]]
+    user: str
+
+    _client: MQTT.MQTT
 
     def __init__(self, mqtt_client: MQTT.MQTT) -> None:
         # Check that provided object is a MiniMQTT client object
@@ -240,7 +251,6 @@ class MQTT_API:
 
             while True:
                 google_iot.loop()
-
         """
         if self._connected:
             self._client.loop()
@@ -250,7 +260,6 @@ class MQTT_API:
 
         :param str topic: Required MQTT topic. Defaults to events.
         :param str subfolder: Optional MQTT topic subfolder. Defaults to None.
-
         """
         if subfolder is not None:
             mqtt_topic = "/devices/{}/{}/{}".format(self.device_id, topic, subfolder)
@@ -262,7 +271,6 @@ class MQTT_API:
         """Unsubscribes from a device's "commands/#" topic.
 
         :param int qos: Quality of Service level for the message.
-
         """
         self.unsubscribe("commands/#")
 
@@ -277,7 +285,6 @@ class MQTT_API:
         :param str topic: Required MQTT topic. Defaults to events.
         :param str subfolder: Optional MQTT topic subfolder. Defaults to None.
         :param int qos: Quality of Service level for the message.
-
         """
         if subfolder is not None:
             mqtt_topic = "/devices/{}/{}/{}".format(self.device_id, topic, subfolder)
@@ -296,7 +303,6 @@ class MQTT_API:
         :param str topic: Required MQTT topic.
         :param str subfolder: Optional MQTT topic subfolder. Defaults to None.
         :param int qos: Quality of Service level for the message.
-
         """
         self.subscribe(topic, subfolder, qos)
 
@@ -305,14 +311,13 @@ class MQTT_API:
         topic.
 
         :param int qos: Quality of Service level for the message.
-
         """
         self.subscribe("config", qos=qos)
 
     def subscribe_to_all_commands(self, qos: int = 1) -> None:
         """Subscribes to a device's "commands/#" topic.
-        :param int qos: Quality of Service level for the message.
 
+        :param int qos: Quality of Service level for the message.
         """
         self.subscribe("commands/#", qos=qos)
 
@@ -333,7 +338,6 @@ class MQTT_API:
         :param str topic: Required MQTT topic. Defaults to events.
         :param str subfolder: Optional MQTT topic subfolder. Defaults to None.
         :param int qos: Quality of Service level for the message.
-
         """
         if subfolder is not None:
             mqtt_topic = "/devices/{}/{}/{}".format(self.device_id, topic, subfolder)
@@ -350,7 +354,6 @@ class MQTT_API:
         sent by this method should be information about the device itself (such as number of
         crashes, battery level, or device health). This method is unidirectional,
         it communicates Device-to-Cloud only.
-
         """
         self._client.publish(payload, "state")
 
@@ -362,8 +365,20 @@ class Cloud_Core:
     :param ESP_SPIcontrol esp: ESP32SPI object.
     :param dict secrets: Secrets.py file.
     :param bool log: Enable Cloud_Core logging, defaults to False.
-
     """
+
+    broker: str
+    username: str
+    cid: str
+    logger: logging.Logger
+
+    _esp: Optional[ESP32SPI.ESP_SPIcontrol]
+    _secrets: Optional[Dict[str, Any]]
+    _proj_id: str
+    _region: str
+    _reg_id: str
+    _device_id: str
+    _private_key: str
 
     def __init__(
         self,
