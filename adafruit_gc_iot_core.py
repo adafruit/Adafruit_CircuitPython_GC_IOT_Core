@@ -68,9 +68,9 @@ class MQTT_API:
     on_unsubscribe: Optional[Callable[["MQTT_API", Optional[Any], str, int], None]]
     user: str
 
-    _client: MQTT.MQTT
+    _client: "MQTT.MQTT"
 
-    def __init__(self, mqtt_client: MQTT.MQTT) -> None:
+    def __init__(self, mqtt_client: "MQTT.MQTT") -> None:
         # Check that provided object is a MiniMQTT client object
         mqtt_client_type = str(type(mqtt_client))
         if "MQTT" in mqtt_client_type:
@@ -166,7 +166,7 @@ class MQTT_API:
     # pylint: disable=not-callable, unused-argument, line-too-long
     def _on_connect_mqtt(
         self,
-        client: MQTT.MQTT,
+        client: "MQTT.MQTT",
         user_data: Optional[
             Any
         ],  # TODO: Annotate. Unknown type other than "None" based on inspection of adafruit_minimqtt
@@ -187,7 +187,7 @@ class MQTT_API:
     # pylint: disable=not-callable, unused-argument
     def _on_disconnect_mqtt(
         self,
-        client: MQTT.MQTT,
+        client: "MQTT.MQTT",
         user_data: Optional[
             Any
         ],  # TODO: Annotate. Unknown type other than "None" based on inspection of adafruit_minimqtt
@@ -202,7 +202,7 @@ class MQTT_API:
             self.on_disconnect(self)
 
     # pylint: disable=not-callable
-    def _on_message_mqtt(self, client: MQTT.MQTT, topic: str, payload: str) -> None:
+    def _on_message_mqtt(self, client: "MQTT.MQTT", topic: str, payload: str) -> None:
         """Runs when the client calls on_message."""
         if self.logger:
             self._client.logger.debug("Client called on_message")
@@ -212,7 +212,7 @@ class MQTT_API:
     # pylint: disable=not-callable
     def _on_subscribe_mqtt(
         self,
-        client: MQTT.MQTT,
+        client: "MQTT.MQTT",
         user_data: Optional[
             Any
         ],  # TODO: Annotate. Unknown type other than "None" based on inspection of adafruit_minimqtt
@@ -228,7 +228,7 @@ class MQTT_API:
     # pylint: disable=not-callable
     def _on_unsubscribe_mqtt(
         self,
-        client: MQTT.MQTT,
+        client: "MQTT.MQTT",
         user_data: Optional[
             Any
         ],  # TODO: Annotate. Unknown type other than "None" based on inspection of adafruit_minimqtt
@@ -372,7 +372,7 @@ class Cloud_Core:
     cid: str
     logger: Optional[logging.Logger]
 
-    _esp: Optional[ESP32SPI.ESP_SPIcontrol]
+    _esp: Optional["ESP32SPI.ESP_SPIcontrol"]
     _secrets: Optional[Dict[str, Any]]
     _proj_id: str
     _region: str
@@ -382,7 +382,7 @@ class Cloud_Core:
 
     def __init__(
         self,
-        esp: Optional[ESP32SPI.ESP_SPIcontrol] = None,
+        esp: Optional["ESP32SPI.ESP_SPIcontrol"] = None,
         secrets: Optional[Dict[str, Any]] = None,
         log: bool = False,
     ) -> None:
