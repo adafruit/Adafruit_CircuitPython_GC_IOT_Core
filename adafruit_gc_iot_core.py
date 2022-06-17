@@ -33,6 +33,7 @@ try:
     from typing import Any, Callable, Dict, Optional, Type, Union
     from types import TracebackType
 
+    # pylint: disable=unused-import
     from adafruit_esp32spi import adafruit_esp32spi as ESP32SPI
     from adafruit_minimqtt import adafruit_minimqtt as MQTT
 except ImportError:
