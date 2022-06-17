@@ -370,7 +370,7 @@ class Cloud_Core:
     broker: str
     username: str
     cid: str
-    logger: logging.Logger
+    logger: Optional[logging.Logger]
 
     _esp: Optional[ESP32SPI.ESP_SPIcontrol]
     _secrets: Optional[Dict[str, Any]]
