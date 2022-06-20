@@ -33,7 +33,6 @@ try:
     from typing import Any, Callable, Dict, Optional, Type, Union
     from types import TracebackType
 
-    # pylint: disable=unused-import
     from adafruit_esp32spi import adafruit_esp32spi as ESP32SPI
     from adafruit_minimqtt import adafruit_minimqtt as MQTT
 except ImportError:
@@ -62,16 +61,16 @@ class MQTT_API:
 
     device_id: str
     logger: bool
-    on_connect: Optional[Callable[["MQTT_API", Optional[Any], bytearray, int], None]]
+    on_connect: Optional[Callable[["MQTT_API", Optional[Any], int, int], None]]
     on_disconnect: Optional[Callable[["MQTT_API"], None]]
     on_message: Optional[Callable[["MQTT_API", str, str], None]]
     on_subscribe: Optional[Callable[["MQTT_API", Optional[Any], str, int], None]]
     on_unsubscribe: Optional[Callable[["MQTT_API", Optional[Any], str, int], None]]
     user: str
 
-    _client: "MQTT.MQTT"
+    _client: MQTT.MQTT
 
-    def __init__(self, mqtt_client: "MQTT.MQTT") -> None:
+    def __init__(self, mqtt_client: MQTT.MQTT) -> None:
         # Check that provided object is a MiniMQTT client object
         mqtt_client_type = str(type(mqtt_client))
         if "MQTT" in mqtt_client_type:
@@ -166,9 +165,9 @@ class MQTT_API:
     # pylint: disable=not-callable, unused-argument
     def _on_connect_mqtt(
         self,
-        client: "MQTT.MQTT",
+        client: MQTT.MQTT,
         user_data: Optional[Any],
-        flags: bytearray,
+        flags: int,
         return_code: int,
     ) -> None:
         """Runs when the mqtt client calls on_connect."""
@@ -185,7 +184,7 @@ class MQTT_API:
     # pylint: disable=not-callable, unused-argument
     def _on_disconnect_mqtt(
         self,
-        client: "MQTT.MQTT",
+        client: MQTT.MQTT,
         user_data: Optional[Any],
         return_code: int,
     ) -> None:
@@ -198,7 +197,7 @@ class MQTT_API:
             self.on_disconnect(self)
 
     # pylint: disable=not-callable
-    def _on_message_mqtt(self, client: "MQTT.MQTT", topic: str, payload: str) -> None:
+    def _on_message_mqtt(self, client: MQTT.MQTT, topic: str, payload: str) -> None:
         """Runs when the client calls on_message."""
         if self.logger:
             self._client.logger.debug("Client called on_message")
@@ -208,7 +207,7 @@ class MQTT_API:
     # pylint: disable=not-callable
     def _on_subscribe_mqtt(
         self,
-        client: "MQTT.MQTT",
+        client: MQTT.MQTT,
         user_data: Optional[Any],
         topic: str,
         qos: int,
@@ -222,7 +221,7 @@ class MQTT_API:
     # pylint: disable=not-callable
     def _on_unsubscribe_mqtt(
         self,
-        client: "MQTT.MQTT",
+        client: MQTT.MQTT,
         user_data: Optional[Any],
         topic: str,
         pid: int,
@@ -315,7 +314,7 @@ class MQTT_API:
 
     def publish(
         self,
-        payload: Union[float, int, str],
+        payload: Union[int, str],
         topic: str = "events",
         subfolder: Optional[str] = None,
         qos: int = 0,
@@ -341,7 +340,7 @@ class MQTT_API:
             raise TypeError("A topic string must be specified.")
         self._client.publish(mqtt_topic, payload, qos=qos)
 
-    def publish_state(self, payload: Union[float, int, str]) -> None:
+    def publish_state(self, payload: Union[int, str]) -> None:
         """Publishes a device state message to the Cloud IoT MQTT API. Data
         sent by this method should be information about the device itself (such as number of
         crashes, battery level, or device health). This method is unidirectional,
@@ -364,7 +363,7 @@ class Cloud_Core:
     cid: str
     logger: Optional[logging.Logger]
 
-    _esp: Optional["ESP32SPI.ESP_SPIcontrol"]
+    _esp: Optional[ESP32SPI.ESP_SPIcontrol]
     _secrets: Optional[Dict[str, Any]]
     _proj_id: str
     _region: str
@@ -374,7 +373,7 @@ class Cloud_Core:
 
     def __init__(
         self,
-        esp: Optional["ESP32SPI.ESP_SPIcontrol"] = None,
+        esp: Optional[ESP32SPI.ESP_SPIcontrol] = None,
         secrets: Optional[Dict[str, Any]] = None,
         log: bool = False,
     ) -> None:
