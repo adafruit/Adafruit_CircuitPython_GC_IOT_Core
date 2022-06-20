@@ -163,14 +163,11 @@ class MQTT_API:
         """Returns if client is connected to Google's MQTT broker."""
         return self._connected
 
-    # TODO: Remove line-too-long; temporary with TODO comments below
-    # pylint: disable=not-callable, unused-argument, line-too-long
+    # pylint: disable=not-callable, unused-argument
     def _on_connect_mqtt(
         self,
         client: "MQTT.MQTT",
-        user_data: Optional[
-            Any
-        ],  # TODO: Annotate. Unknown type other than "None" based on inspection of adafruit_minimqtt
+        user_data: Optional[Any],
         flags: bytearray,
         return_code: int,
     ) -> None:
@@ -189,9 +186,7 @@ class MQTT_API:
     def _on_disconnect_mqtt(
         self,
         client: "MQTT.MQTT",
-        user_data: Optional[
-            Any
-        ],  # TODO: Annotate. Unknown type other than "None" based on inspection of adafruit_minimqtt
+        user_data: Optional[Any],
         return_code: int,
     ) -> None:
         """Runs when the client calls on_disconnect."""
@@ -214,9 +209,7 @@ class MQTT_API:
     def _on_subscribe_mqtt(
         self,
         client: "MQTT.MQTT",
-        user_data: Optional[
-            Any
-        ],  # TODO: Annotate. Unknown type other than "None" based on inspection of adafruit_minimqtt
+        user_data: Optional[Any],
         topic: str,
         qos: int,
     ) -> None:
@@ -230,9 +223,7 @@ class MQTT_API:
     def _on_unsubscribe_mqtt(
         self,
         client: "MQTT.MQTT",
-        user_data: Optional[
-            Any
-        ],  # TODO: Annotate. Unknown type other than "None" based on inspection of adafruit_minimqtt
+        user_data: Optional[Any],
         topic: str,
         pid: int,
     ) -> None:
@@ -432,7 +423,6 @@ class Cloud_Core:
 
             jwt = CloudCore.generate_jwt()
             print("Generated JWT: ", jwt)
-
         """
         if self.logger:
             self.logger.debug("Generating JWT...")
