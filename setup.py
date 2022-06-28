@@ -37,6 +37,10 @@ setup(
         "Adafruit-Blinka",
         "adafruit-circuitpython-jwt",
         "adafruit-circuitpython-logging>=4.0.1",
+        "adafruit-circuitpython-esp32spi>=5.0.0",
+        "adafruit-circuitpython-minimqtt>=5.3.2",
+        "adafruit-circuitpython-rsa>=1.2.12",
+        "adafruit-circuitpython-hashlib>=1.4.5",
     ],
     # Choose your license
     license="MIT",
