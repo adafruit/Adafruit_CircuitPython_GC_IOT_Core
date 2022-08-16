@@ -42,7 +42,7 @@ import adafruit_logging as logging
 from adafruit_jwt import JWT
 import rtc
 
-__version__ = "0.0.0-auto.0"
+__version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_GC_IOT_Core.git"
 
 
