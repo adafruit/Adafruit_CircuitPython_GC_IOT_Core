@@ -25,9 +25,13 @@ Dependencies
 This driver depends on:
 
 * `Adafruit CircuitPython <https://github.com/adafruit/circuitpython>`_
+* `Adafruit CircuitPython ConnectionManager <https://github.com/adafruit/Adafruit_CircuitPython_ConnectionManager/>`_
+* `Adafruit CircuitPython ESP32SPI <https://github.com/adafruit/Adafruit_CircuitPython_ESP32SPI/>`_
+* `Adafruit CircuitPython hashlib <https://github.com/adafruit/Adafruit_CircuitPython_hashlib/>`_
 * `Adafruit CircuitPython JWT <https://github.com/adafruit/Adafruit_CircuitPython_JWT>`_
 * `Adafruit CircuitPython Logging <https://github.com/adafruit/Adafruit_CircuitPython_Logger>`_
-
+* `Adafruit CircuitPython MiniMQTT <https://github.com/adafruit/Adafruit_CircuitPython_MiniMQTT>`_
+* `Adafruit CircuitPython RSA <https://github.com/adafruit/Adafruit_CircuitPython_RSA/>`_
 
 Please ensure all dependencies are available on the CircuitPython filesystem.
 This is easily achieved by downloading
