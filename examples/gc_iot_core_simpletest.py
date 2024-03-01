@@ -9,7 +9,6 @@ import neopixel
 import adafruit_connection_manager
 from adafruit_esp32spi import adafruit_esp32spi
 from adafruit_esp32spi import adafruit_esp32spi_wifimanager
-import adafruit_esp32spi.adafruit_esp32spi_socket as pool
 
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
 from adafruit_gc_iot_core import Cloud_Core, MQTT_API
@@ -98,7 +97,8 @@ print("Connecting to WiFi...")
 wifi.connect()
 print("Connected!")
 
-ssl_context = adafruit_connection_manager.create_fake_ssl_context(pool, esp)
+pool = adafruit_connection_manager.get_radio_socketpool(esp)
+ssl_context = adafruit_connection_manager.get_radio_ssl_context(esp)
 
 # Initialize Google Cloud IoT Core interface
 google_iot = Cloud_Core(esp, secrets)
