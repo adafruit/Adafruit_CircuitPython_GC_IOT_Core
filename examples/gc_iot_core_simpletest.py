@@ -6,9 +6,10 @@ import board
 import busio
 from digitalio import DigitalInOut
 import neopixel
+import adafruit_connection_manager
 from adafruit_esp32spi import adafruit_esp32spi
 from adafruit_esp32spi import adafruit_esp32spi_wifimanager
-import adafruit_esp32spi.adafruit_esp32spi_socket as socket
+import adafruit_esp32spi.adafruit_esp32spi_socket as pool
 
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
 from adafruit_gc_iot_core import Cloud_Core, MQTT_API
@@ -97,8 +98,7 @@ print("Connecting to WiFi...")
 wifi.connect()
 print("Connected!")
 
-# Initialize MQTT interface with the esp interface
-MQTT.set_socket(socket, esp)
+ssl_context = adafruit_connection_manager.create_fake_ssl_context(pool, esp)
 
 # Initialize Google Cloud IoT Core interface
 google_iot = Cloud_Core(esp, secrets)
@@ -114,6 +114,8 @@ client = MQTT.MQTT(
     username=google_iot.username,
     password=secrets["jwt"],
     client_id=google_iot.cid,
+    socket_pool=pool,
+    ssl_context=ssl_context,
 )
 
 # Initialize Google MQTT API Client
