@@ -354,7 +354,7 @@ class Cloud_Core:
     """CircuitPython Google Cloud IoT Core module.
 
     :param ESP_SPIcontrol esp: ESP32SPI object.
-    :param dict secrets: dictonary of settings.
+    :param dict secrets: dictionary of settings.
     :param bool log: Enable Cloud_Core logging, defaults to False.
     """
 
