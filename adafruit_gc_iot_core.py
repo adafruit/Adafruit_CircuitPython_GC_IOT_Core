@@ -354,7 +354,7 @@ class Cloud_Core:
     """CircuitPython Google Cloud IoT Core module.
 
     :param ESP_SPIcontrol esp: ESP32SPI object.
-    :param dict secrets: Secrets.py file.
+    :param dict secrets: dictonary of settings.
     :param bool log: Enable Cloud_Core logging, defaults to False.
     """
 
@@ -364,7 +364,7 @@ class Cloud_Core:
     logger: Optional[logging.Logger]
 
     _esp: Optional[ESP32SPI.ESP_SPIcontrol]
-    _secrets: Optional[Dict[str, Any]]
+    _settings: Optional[Dict[str, Any]]
     _proj_id: str
     _region: str
     _reg_id: str
@@ -380,22 +380,20 @@ class Cloud_Core:
         self._esp = esp
         # Validate Secrets
         if secrets and hasattr(secrets, "keys"):
-            self._secrets = secrets
+            self._settings = secrets
         else:
-            raise AttributeError(
-                "Project settings are kept in secrets.py, please add them there!"
-            )
+            raise AttributeError("Project settings must be passed in")
         self.logger = None
         if log is True:
             self.logger = logging.getLogger("log")
             self.logger.addHandler(logging.StreamHandler())
             self.logger.setLevel(logging.DEBUG)
-        # Configuration, from secrets file
-        self._proj_id = secrets["project_id"]
-        self._region = secrets["cloud_region"]
-        self._reg_id = secrets["registry_id"]
-        self._device_id = secrets["device_id"]
-        self._private_key = secrets["private_key"]
+        # Configuration
+        self._proj_id = self._settings["project_id"]
+        self._region = self._settings["cloud_region"]
+        self._reg_id = self._settings["registry_id"]
+        self._device_id = self._settings["device_id"]
+        self._private_key = self._settings["private_key"]
         self.broker = "mqtt.googleapis.com"
         self.username = b"unused"
         self.cid = self.client_id
