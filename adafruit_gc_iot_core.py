@@ -30,8 +30,8 @@ Implementation Notes
 import time
 
 try:
-    from typing import Any, Callable, Dict, Optional, Type, Union
     from types import TracebackType
+    from typing import Any, Callable, Dict, Optional, Type, Union
 
     from adafruit_esp32spi import adafruit_esp32spi as ESP32SPI
     from adafruit_minimqtt import adafruit_minimqtt as MQTT
@@ -39,8 +39,8 @@ except ImportError:
     pass
 
 import adafruit_logging as logging
-from adafruit_jwt import JWT
 import rtc
+from adafruit_jwt import JWT
 
 __version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_GC_IOT_Core.git"
@@ -49,7 +49,6 @@ __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_GC_IOT_Core.git"
 class MQTT_API_ERROR(Exception):
     """Exception raised on MQTT API return-code errors."""
 
-    # pylint: disable=unnecessary-pass
     pass
 
 
@@ -76,17 +75,13 @@ class MQTT_API:
         if "MQTT" in mqtt_client_type:
             self._client = mqtt_client
         else:
-            raise TypeError(
-                "This class requires a MiniMQTT client object, please create one."
-            )
+            raise TypeError("This class requires a MiniMQTT client object, please create one.")
         # Verify that the MiniMQTT client was setup correctly.
         try:
             # I have no idea where _client.user comes from, but ._username exists when .user doesn't
             self.user = self._client._username
         except Exception as err:
-            raise TypeError(
-                "Google Cloud Core IoT MQTT API requires a username."
-            ) from err
+            raise TypeError("Google Cloud Core IoT MQTT API requires a username.") from err
         # Validate provided JWT before connecting
         try:
             JWT.validate(self._client._password)  # Again, .password isn't valid here..
@@ -162,7 +157,6 @@ class MQTT_API:
         """Returns if client is connected to Google's MQTT broker."""
         return self._connected
 
-    # pylint: disable=not-callable, unused-argument
     def _on_connect_mqtt(
         self,
         client: MQTT.MQTT,
@@ -181,7 +175,6 @@ class MQTT_API:
         if self.on_connect is not None:
             self.on_connect(self, user_data, flags, return_code)
 
-    # pylint: disable=not-callable, unused-argument
     def _on_disconnect_mqtt(
         self,
         client: MQTT.MQTT,
@@ -196,7 +189,6 @@ class MQTT_API:
         if self.on_disconnect is not None:
             self.on_disconnect(self)
 
-    # pylint: disable=not-callable
     def _on_message_mqtt(self, client: MQTT.MQTT, topic: str, payload: str) -> None:
         """Runs when the client calls on_message."""
         if self.logger:
@@ -204,7 +196,6 @@ class MQTT_API:
         if self.on_message is not None:
             self.on_message(self, topic, payload)
 
-    # pylint: disable=not-callable
     def _on_subscribe_mqtt(
         self,
         client: MQTT.MQTT,
@@ -218,7 +209,6 @@ class MQTT_API:
         if self.on_subscribe is not None:
             self.on_subscribe(self, user_data, topic, qos)
 
-    # pylint: disable=not-callable
     def _on_unsubscribe_mqtt(
         self,
         client: MQTT.MQTT,
@@ -253,9 +243,9 @@ class MQTT_API:
         :param str subfolder: Optional MQTT topic subfolder. Defaults to None.
         """
         if subfolder is not None:
-            mqtt_topic = "/devices/{}/{}/{}".format(self.device_id, topic, subfolder)
+            mqtt_topic = f"/devices/{self.device_id}/{topic}/{subfolder}"
         else:
-            mqtt_topic = "/devices/{}/{}".format(self.device_id, topic)
+            mqtt_topic = f"/devices/{self.device_id}/{topic}"
         self._client.unsubscribe(mqtt_topic)
 
     def unsubscribe_from_all_commands(self) -> None:
@@ -278,9 +268,9 @@ class MQTT_API:
         :param int qos: Quality of Service level for the message.
         """
         if subfolder is not None:
-            mqtt_topic = "/devices/{}/{}/{}".format(self.device_id, topic, subfolder)
+            mqtt_topic = f"/devices/{self.device_id}/{topic}/{subfolder}"
         else:
-            mqtt_topic = "/devices/{}/{}".format(self.device_id, topic)
+            mqtt_topic = f"/devices/{self.device_id}/{topic}"
         self._client.subscribe(mqtt_topic, qos)
 
     def subscribe_to_subfolder(
@@ -331,9 +321,9 @@ class MQTT_API:
         :param int qos: Quality of Service level for the message.
         """
         if subfolder is not None:
-            mqtt_topic = "/devices/{}/{}/{}".format(self.device_id, topic, subfolder)
+            mqtt_topic = f"/devices/{self.device_id}/{topic}/{subfolder}"
         elif topic is not None:
-            mqtt_topic = "/devices/{}/{}".format(self.device_id, topic)
+            mqtt_topic = f"/devices/{self.device_id}/{topic}"
         elif topic == "state" and subfolder is not None:
             raise ValueError("Subfolders are not supported for state messages.")
         else:
@@ -349,7 +339,6 @@ class MQTT_API:
         self._client.publish(payload, "state")
 
 
-# pylint: disable=too-many-instance-attributes
 class Cloud_Core:
     """CircuitPython Google Cloud IoT Core module.
 
@@ -401,11 +390,9 @@ class Cloud_Core:
     @property
     def client_id(self) -> str:
         """Returns a Google Cloud IOT Core Client ID."""
-        client_id = "projects/{0}/locations/{1}/registries/{2}/devices/{3}".format(
-            self._proj_id, self._region, self._reg_id, self._device_id
-        )
+        client_id = f"projects/{self._proj_id}/locations/{self._region}/registries/{self._reg_id}/devices/{self._device_id}"  # noqa: E501
         if self.logger:
-            self.logger.debug("Client ID: {}".format(client_id))
+            self.logger.debug(f"Client ID: {client_id}")
         return client_id
 
     def generate_jwt(self, ttl: int = 43200, algo: str = "RS256") -> str:
@@ -435,9 +422,7 @@ class Cloud_Core:
                     pass
             rtc.RTC().datetime = now_utc
         elif self.logger:
-            self.logger.info(
-                "No self._esp instance found, assuming RTC has been previously set"
-            )
+            self.logger.info("No self._esp instance found, assuming RTC has been previously set")
 
         claims = {
             # The time that the token was issued at
